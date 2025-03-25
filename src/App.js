@@ -51,7 +51,7 @@ const AppComponent = () => {
       {
         first_name: data.first_name,
         last_name: data.last_name,
-        age: data.id,
+        age: data.age,
       }
     );
     fetchPeople();
@@ -101,24 +101,30 @@ const AppComponent = () => {
 
   const handleBulkUpdate = async () => {
     if (updatedRows.length === 0) {
-      alert("No changes detected.");
-      return;
+        alert("No changes detected.");
+        return;
     }
-  
+
     try {
-      await axios.post("http://localhost:5000/api/v1/people/bulkUpdate", {
-        records: updatedRows,
-      });
-  
-      setUpdatedRows([]); // Clear the modified rows after update
-     await setTimeout(() => {
-        fetchPeople();
-      }, 5000);
-      // fetchPeople(); // Refresh data
+        const response = await axios.post("http://localhost:5000/api/v1/people/bulkUpdate", {
+            records: updatedRows,
+        });
+
+        if (response.data.success) {
+            setUpdatedRows([]);
+            // await fetchPeople(); 
+        } else {
+            alert("Bulk update failed!");
+        }
     } catch (error) {
-      console.error("Error updating records:", error);
+        console.error("Error updating records:", error);
+        alert("Bulk update encountered an error.");
+    }finally{
+      setTimeout(()=>{
+        fetchPeople();
+      },5000)
     }
-  };
+};
 
   const gridStyle = {
     height: 500,
